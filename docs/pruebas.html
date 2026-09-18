@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Pruebas funcionales - Sistema agrario</title>
+  <style>
+    body { font-family: Calibri, Arial, sans-serif; background: #f4f6f8; margin: 24px; color: #1b1b1b; }
+    h1 { color: #1F4E79; }
+    .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .meta { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+    code { background: #eef2f6; padding: 4px 8px; border-radius: 4px; }
+    pre { background: #0f172a; color: #e2e8f0; padding: 12px; border-radius: 6px; overflow: auto; font-size: 13px; }
+    .method { color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+    .GET { background: #1d4ed8; }
+    .POST { background: #15803d; }
+    .DELETE { background: #b91c1c; }
+    .status.ok { color: #15803d; font-weight: bold; }
+    .status.fail { color: #b91c1c; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Registro de pruebas funcionales</h1>
+  <p>Sistema agrario - monitoreo de lotes | http://localhost:3000</p>
+  
+            <article class="card">
+              <div class="meta">
+                <span class="method GET">GET</span>
+                <code>/api</code>
+                <span class="status ok">200</span>
+              </div>
+              <h3>Listado de endpoints</h3>
+              <pre>{
+  "mensaje": "Sistema agrario - monitoreo de lotes",
+  "vistas": "/ver/productores",
+  "endpoints": {
+    "productores": "/productores",
+    "tecnicos": "/tecnicos",
+    "tiposCultivo": "/tipos-cultivo",
+    "lotes": "/lotes",
+    "observaciones": "/observaciones"
+  }
+}</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method GET">GET</span>
+                <code>/productores</code>
+                <span class="status ok">200</span>
+              </div>
+              <h3>Listar productores</h3>
+              <pre>[
+  {
+    "id": 1,
+    "nombre": "Cooperativa San Martin",
+    "cuit": "30-12345678-9",
+    "localidad": "Rojas",
+    "telefono": "2474441122"
+  },
+  {
+    "id": 2,
+    "nombre": "Estancia Los Alamos",
+    "cuit": "20-30111222-3",
+    "localidad": "Pergamino",
+    "telefono": "2475445566"
+  },
+  {
+    "id": 3,
+    "nombre": "Campo Demo",
+    "cuit": "30-11111111-1",
+    "localidad": "Salto",
+    "telefono": "11111111"
+  }
+]</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method GET">GET</span>
+                <code>/productores/1</code>
+                <span class="status ok">200</span>
+              </div>
+              <h3>Buscar productor por id</h3>
+              <pre>{
+  "id": 1,
+  "nombre": "Cooperativa San Martin",
+  "cuit": "30-12345678-9",
+  "localidad": "Rojas",
+  "telefono": "2474441122"
+}</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method GET">GET</span>
+                <code>/productores/999</code>
+                <span class="status ok">404</span>
+              </div>
+              <h3>Productor inexistente</h3>
+              <pre>{
+  "mensaje": "Productor no encontrado"
+}</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method GET">GET</span>
+                <code>/lotes?productorId=1</code>
+                <span class="status ok">200</span>
+              </div>
+              <h3>Filtrar lotes por productor</h3>
+              <pre>[
+  {
+    "id": 1,
+    "nombre": "Lote Norte",
+    "hectareas": 40,
+    "productorId": 1,
+    "tipoCultivoId": 1,
+    "estado": "activo"
+  },
+  {
+    "id": 2,
+    "nombre": "Lote Sur",
+    "hectareas": 22,
+    "productorId": 1,
+    "tipoCultivoId": 2,
+    "estado": "activo"
+  }
+]</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method GET">GET</span>
+                <code>/tecnicos</code>
+                <span class="status ok">200</span>
+              </div>
+              <h3>Listar tecnicos</h3>
+              <pre>[
+  {
+    "id": 1,
+    "nombre": "Laura",
+    "apellido": "Fernandez",
+    "especialidad": "Fitopatologia",
+    "matricula": "TEC-1001"
+  },
+  {
+    "id": 2,
+    "nombre": "Martin",
+    "apellido": "Acosta",
+    "especialidad": "Suelos",
+    "matricula": "TEC-1002"
+  }
+]</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method GET">GET</span>
+                <code>/tipos-cultivo</code>
+                <span class="status ok">200</span>
+              </div>
+              <h3>Listar tipos de cultivo</h3>
+              <pre>[
+  {
+    "id": 1,
+    "nombre": "Soja",
+    "descripcion": "Oleaginosa de ciclo estival",
+    "cicloDias": 130
+  },
+  {
+    "id": 2,
+    "nombre": "Maiz",
+    "descripcion": "Cereal de verano",
+    "cicloDias": 140
+  },
+  {
+    "id": 3,
+    "nombre": "Trigo",
+    "descripcion": "Cereal de invierno",
+    "cicloDias": 150
+  }
+]</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method GET">GET</span>
+                <code>/observaciones?loteId=1</code>
+                <span class="status ok">200</span>
+              </div>
+              <h3>Filtrar observaciones por lote</h3>
+              <pre>[
+  {
+    "id": 1,
+    "loteId": 1,
+    "tecnicoId": 1,
+    "fecha": "2026-09-10",
+    "tipo": "humedad",
+    "descripcion": "Humedad de suelo adecuada para siembra"
+  },
+  {
+    "id": 2,
+    "loteId": 1,
+    "tecnicoId": 2,
+    "fecha": "2026-09-12",
+    "tipo": "suelo",
+    "descripcion": "Se recomienda analisis de nitrogeno"
+  }
+]</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method POST">POST</span>
+                <code>/lotes</code>
+                <span class="status ok">400</span>
+              </div>
+              <h3>Alta de lote con productor inexistente</h3>
+              <pre>{
+  "mensaje": "El productor indicado no existe"
+}</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method DELETE">DELETE</span>
+                <code>/productores/1</code>
+                <span class="status ok">400</span>
+              </div>
+              <h3>Baja de productor con lotes asociados</h3>
+              <pre>{
+  "mensaje": "No se puede eliminar el productor porque tiene lotes asociados"
+}</pre>
+            </article>
+            
+            <article class="card">
+              <div class="meta">
+                <span class="method POST">POST</span>
+                <code>/observaciones</code>
+                <span class="status ok">201</span>
+              </div>
+              <h3>Alta de observacion</h3>
+              <pre>{
+  "mensaje": "Observacion creada",
+  "observacion": {
+    "id": 4,
+    "loteId": 3,
+    "tecnicoId": 2,
+    "fecha": "2026-09-17",
+    "tipo": "clima",
+    "descripcion": "Helada leve. Evaluar dano en trigo"
+  }
+}</pre>
+            </article>
+            
+</body>
+</html>

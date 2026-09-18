@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  h2 Observaciones
+  table
+    tr
+      th Id
+      th Lote
+      th Tecnico
+      th Fecha
+      th Tipo
+      th Descripcion
+    each item in observaciones
+      tr
+        td= item.id
+        td= item.loteId
+        td= item.tecnicoId
+        td= item.fecha
+        td= item.tipo
+        td= item.descripcion
+
+  h3 Cargar observacion
+  form(method="post" action="/observaciones")
+    label Lote
+    select(name="loteId" required)
+      each lote in lotes
+        option(value=lote.id)= lote.nombre
+    label Tecnico
+    select(name="tecnicoId" required)
+      each tecnico in tecnicos
+        option(value=tecnico.id)= tecnico.nombre + " " + tecnico.apellido
+    label Fecha
+    input(type="date" name="fecha")
+    label Tipo
+    input(type="text" name="tipo" required)
+    label Descripcion
+    input(type="text" name="descripcion")
+    div
+      button(type="submit") Guardar

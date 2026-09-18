@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "nombre": "Cooperativa San Martin",
+    "cuit": "30-12345678-9",
+    "localidad": "Rojas",
+    "telefono": "2474441122"
+  },
+  {
+    "id": 2,
+    "nombre": "Estancia Los Alamos",
+    "cuit": "20-30111222-3",
+    "localidad": "Pergamino",
+    "telefono": "2475445566"
+  },
+  {
+    "id": 3,
+    "nombre": "Campo Demo",
+    "cuit": "30-11111111-1",
+    "localidad": "Salto",
+    "telefono": "11111111"
+  },
+  {
+    "id": 4,
+    "nombre": "Campo El Ombú",
+    "cuit": "27-40555666-8",
+    "localidad": "Salto",
+    "telefono": "2476112233"
+  }
+]

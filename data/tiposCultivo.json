@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "nombre": "Soja",
+    "descripcion": "Oleaginosa de ciclo estival",
+    "cicloDias": 130
+  },
+  {
+    "id": 2,
+    "nombre": "Maiz",
+    "descripcion": "Cereal de verano",
+    "cicloDias": 140
+  },
+  {
+    "id": 3,
+    "nombre": "Trigo",
+    "descripcion": "Cereal de invierno",
+    "cicloDias": 150
+  }
+]

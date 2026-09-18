@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  h2 Tipos de cultivo
+  table
+    tr
+      th Id
+      th Nombre
+      th Descripcion
+      th Ciclo (dias)
+    each item in tipos
+      tr
+        td= item.id
+        td= item.nombre
+        td= item.descripcion
+        td= item.cicloDias
+
+  h3 Cargar tipo de cultivo
+  form(method="post" action="/tipos-cultivo")
+    label Nombre
+    input(type="text" name="nombre" required)
+    label Descripcion
+    input(type="text" name="descripcion")
+    label Ciclo en dias
+    input(type="number" name="cicloDias")
+    div
+      button(type="submit") Guardar

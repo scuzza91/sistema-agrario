@@ -1,0 +1,393 @@
+{
+  "info": {
+    "name": "Sistema Agrario - Monitoreo de Lotes",
+    "description": "Pruebas funcionales de la primera entrega. Importar en Postman y ejecutar con el servidor en http://localhost:3000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Inicio",
+      "item": [
+        {
+          "name": "GET listado de endpoints",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api"
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Productores",
+      "item": [
+        {
+          "name": "GET todos los productores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/productores"
+          }
+        },
+        {
+          "name": "GET productor por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/productores/1"
+          }
+        },
+        {
+          "name": "GET productor inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/productores/999"
+          }
+        },
+        {
+          "name": "POST crear productor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Campo El Ombú\",\n  \"cuit\": \"27-40555666-8\",\n  \"localidad\": \"Salto\",\n  \"telefono\": \"2476112233\"\n}"
+            },
+            "url": "{{baseUrl}}/productores"
+          }
+        },
+        {
+          "name": "PUT actualizar productor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"2476990000\"\n}"
+            },
+            "url": "{{baseUrl}}/productores/1"
+          }
+        },
+        {
+          "name": "DELETE productor con lotes (400)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/productores/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Tecnicos",
+      "item": [
+        {
+          "name": "GET todos los tecnicos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tecnicos"
+          }
+        },
+        {
+          "name": "GET tecnico por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tecnicos/1"
+          }
+        },
+        {
+          "name": "POST crear tecnico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sofia\",\n  \"apellido\": \"Rivas\",\n  \"especialidad\": \"Riego\",\n  \"matricula\": \"TEC-1003\"\n}"
+            },
+            "url": "{{baseUrl}}/tecnicos"
+          }
+        },
+        {
+          "name": "PUT actualizar tecnico",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"especialidad\": \"Riego y suelos\"\n}"
+            },
+            "url": "{{baseUrl}}/tecnicos/2"
+          }
+        },
+        {
+          "name": "DELETE tecnico con observaciones (400)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/tecnicos/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Tipos de cultivo",
+      "item": [
+        {
+          "name": "GET todos los tipos de cultivo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tipos-cultivo"
+          }
+        },
+        {
+          "name": "GET tipo de cultivo por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tipos-cultivo/1"
+          }
+        },
+        {
+          "name": "POST crear tipo de cultivo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Girasol\",\n  \"descripcion\": \"Oleaginosa de verano\",\n  \"cicloDias\": 120\n}"
+            },
+            "url": "{{baseUrl}}/tipos-cultivo"
+          }
+        },
+        {
+          "name": "PUT actualizar tipo de cultivo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cicloDias\": 125\n}"
+            },
+            "url": "{{baseUrl}}/tipos-cultivo/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Lotes",
+      "item": [
+        {
+          "name": "GET todos los lotes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/lotes"
+          }
+        },
+        {
+          "name": "GET lotes por productor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/lotes?productorId=1"
+          }
+        },
+        {
+          "name": "GET lote por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/lotes/1"
+          }
+        },
+        {
+          "name": "POST crear lote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Lote Este\",\n  \"hectareas\": 18,\n  \"productorId\": 2,\n  \"tipoCultivoId\": 1,\n  \"estado\": \"activo\"\n}"
+            },
+            "url": "{{baseUrl}}/lotes"
+          }
+        },
+        {
+          "name": "POST lote con productor inexistente (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Lote Error\",\n  \"hectareas\": 10,\n  \"productorId\": 999,\n  \"tipoCultivoId\": 1\n}"
+            },
+            "url": "{{baseUrl}}/lotes"
+          }
+        },
+        {
+          "name": "PUT actualizar lote",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"en descanso\",\n  \"hectareas\": 41\n}"
+            },
+            "url": "{{baseUrl}}/lotes/1"
+          }
+        },
+        {
+          "name": "DELETE lote con observaciones (400)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/lotes/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Observaciones",
+      "item": [
+        {
+          "name": "GET todas las observaciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/observaciones"
+          }
+        },
+        {
+          "name": "GET observaciones por lote",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/observaciones?loteId=1"
+          }
+        },
+        {
+          "name": "GET observacion por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/observaciones/1"
+          }
+        },
+        {
+          "name": "POST crear observacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loteId\": 3,\n  \"tecnicoId\": 2,\n  \"fecha\": \"2026-09-16\",\n  \"tipo\": \"clima\",\n  \"descripcion\": \"Helada leve. Evaluar dano en trigo\"\n}"
+            },
+            "url": "{{baseUrl}}/observaciones"
+          }
+        },
+        {
+          "name": "POST observacion con lote inexistente (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loteId\": 999,\n  \"tecnicoId\": 1,\n  \"tipo\": \"plaga\",\n  \"descripcion\": \"No deberia guardarse\"\n}"
+            },
+            "url": "{{baseUrl}}/observaciones"
+          }
+        },
+        {
+          "name": "PUT actualizar observacion",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Humedad de suelo adecuada. Releer en 5 dias\"\n}"
+            },
+            "url": "{{baseUrl}}/observaciones/1"
+          }
+        },
+        {
+          "name": "DELETE observacion",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/observaciones/3"
+          }
+        }
+      ]
+    }
+  ]
+}

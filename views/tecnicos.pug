@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h2 Tecnicos
+  table
+    tr
+      th Id
+      th Nombre
+      th Apellido
+      th Especialidad
+      th Matricula
+    each item in tecnicos
+      tr
+        td= item.id
+        td= item.nombre
+        td= item.apellido
+        td= item.especialidad
+        td= item.matricula
+
+  h3 Cargar tecnico
+  form(method="post" action="/tecnicos")
+    label Nombre
+    input(type="text" name="nombre" required)
+    label Apellido
+    input(type="text" name="apellido" required)
+    label Especialidad
+    input(type="text" name="especialidad")
+    label Matricula
+    input(type="text" name="matricula")
+    div
+      button(type="submit") Guardar

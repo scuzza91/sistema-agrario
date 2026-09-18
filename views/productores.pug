@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h2 Productores
+  table
+    tr
+      th Id
+      th Nombre
+      th CUIT
+      th Localidad
+      th Telefono
+    each item in productores
+      tr
+        td= item.id
+        td= item.nombre
+        td= item.cuit
+        td= item.localidad
+        td= item.telefono
+
+  h3 Cargar productor
+  form(method="post" action="/productores")
+    label Nombre
+    input(type="text" name="nombre" required)
+    label CUIT
+    input(type="text" name="cuit" required)
+    label Localidad
+    input(type="text" name="localidad")
+    label Telefono
+    input(type="text" name="telefono")
+    div
+      button(type="submit") Guardar

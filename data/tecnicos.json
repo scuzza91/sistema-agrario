@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "nombre": "Laura",
+    "apellido": "Fernandez",
+    "especialidad": "Fitopatologia",
+    "matricula": "TEC-1001"
+  },
+  {
+    "id": 2,
+    "nombre": "Martin",
+    "apellido": "Acosta",
+    "especialidad": "Suelos",
+    "matricula": "TEC-1002"
+  }
+]

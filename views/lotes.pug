@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  h2 Lotes
+  table
+    tr
+      th Id
+      th Nombre
+      th Hectareas
+      th Productor
+      th Cultivo
+      th Estado
+    each item in lotes
+      tr
+        td= item.id
+        td= item.nombre
+        td= item.hectareas
+        td= item.productorId
+        td= item.tipoCultivoId
+        td= item.estado
+
+  h3 Cargar lote
+  form(method="post" action="/lotes")
+    label Nombre
+    input(type="text" name="nombre" required)
+    label Hectareas
+    input(type="number" name="hectareas" min="1" step="0.1" required)
+    label Productor
+    select(name="productorId" required)
+      each productor in productores
+        option(value=productor.id)= productor.nombre
+    label Tipo de cultivo
+    select(name="tipoCultivoId" required)
+      each tipo in tipos
+        option(value=tipo.id)= tipo.nombre
+    label Estado
+    input(type="text" name="estado" value="activo")
+    div
+      button(type="submit") Guardar

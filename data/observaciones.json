@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "loteId": 1,
+    "tecnicoId": 1,
+    "fecha": "2026-09-10",
+    "tipo": "humedad",
+    "descripcion": "Humedad de suelo adecuada para siembra"
+  },
+  {
+    "id": 2,
+    "loteId": 1,
+    "tecnicoId": 2,
+    "fecha": "2026-09-12",
+    "tipo": "suelo",
+    "descripcion": "Se recomienda analisis de nitrogeno"
+  },
+  {
+    "id": 3,
+    "loteId": 2,
+    "tecnicoId": 1,
+    "fecha": "2026-09-14",
+    "tipo": "plaga",
+    "descripcion": "Presencia leve de oruga. Monitorear en 7 dias"
+  },
+  {
+    "id": 4,
+    "loteId": 3,
+    "tecnicoId": 2,
+    "fecha": "2026-09-16",
+    "tipo": "clima",
+    "descripcion": "Helada leve. Evaluar dano en trigo"
+  }
+]

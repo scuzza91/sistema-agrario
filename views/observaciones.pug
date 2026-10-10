@@ -12,27 +12,32 @@ block content
       th Descripcion
     each item in observaciones
       tr
-        td= item.id
-        td= item.loteId
-        td= item.tecnicoId
-        td= item.fecha
+        td= item._id
+        td= item.lote ? item.lote.nombre : "-"
+        td= item.tecnico ? item.tecnico.nombre + " " + item.tecnico.apellido : "-"
+        td= item.fecha ? item.fecha.toISOString().slice(0, 10) : ""
         td= item.tipo
         td= item.descripcion
 
   h3 Cargar observacion
   form(method="post" action="/observaciones")
     label Lote
-    select(name="loteId" required)
+    select(name="lote" required)
       each lote in lotes
-        option(value=lote.id)= lote.nombre
+        option(value=lote._id)= lote.nombre
     label Tecnico
-    select(name="tecnicoId" required)
+    select(name="tecnico" required)
       each tecnico in tecnicos
-        option(value=tecnico.id)= tecnico.nombre + " " + tecnico.apellido
+        option(value=tecnico._id)= tecnico.nombre + " " + tecnico.apellido
     label Fecha
     input(type="date" name="fecha")
     label Tipo
-    input(type="text" name="tipo" required)
+    select(name="tipo" required)
+      option(value="humedad") humedad
+      option(value="suelo") suelo
+      option(value="plaga") plaga
+      option(value="clima") clima
+      option(value="otro") otro
     label Descripcion
     input(type="text" name="descripcion")
     div

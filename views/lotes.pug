@@ -12,11 +12,11 @@ block content
       th Estado
     each item in lotes
       tr
-        td= item.id
+        td= item._id
         td= item.nombre
         td= item.hectareas
-        td= item.productorId
-        td= item.tipoCultivoId
+        td= item.productor ? item.productor.nombre : "-"
+        td= item.tipoCultivo ? item.tipoCultivo.nombre : "-"
         td= item.estado
 
   h3 Cargar lote
@@ -24,16 +24,19 @@ block content
     label Nombre
     input(type="text" name="nombre" required)
     label Hectareas
-    input(type="number" name="hectareas" min="1" step="0.1" required)
+    input(type="number" name="hectareas" min="0.1" step="0.1" required)
     label Productor
-    select(name="productorId" required)
+    select(name="productor" required)
       each productor in productores
-        option(value=productor.id)= productor.nombre
+        option(value=productor._id)= productor.nombre
     label Tipo de cultivo
-    select(name="tipoCultivoId" required)
+    select(name="tipoCultivo" required)
       each tipo in tipos
-        option(value=tipo.id)= tipo.nombre
+        option(value=tipo._id)= tipo.nombre
     label Estado
-    input(type="text" name="estado" value="activo")
+    select(name="estado")
+      option(value="activo") activo
+      option(value="en barbecho") en barbecho
+      option(value="cosechado") cosechado
     div
       button(type="submit") Guardar

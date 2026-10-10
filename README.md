@@ -1,19 +1,39 @@
 # Sistema agrario - monitoreo de lotes
 
-Primera entrega de **Desarrollo Web Backend** (IFTS 29).
+Segunda entrega de **Desarrollo Web Backend** (IFTS 29).
 
-Aplicacion en Node.js y Express para registrar productores, tipos de cultivo, lotes, tecnicos y observaciones de campo. Los datos se guardan en archivos JSON. No usa MongoDB.
+Aplicacion en Node.js y Express para registrar productores, tipos de cultivo, lotes, tecnicos y observaciones de campo. Los datos se guardan en **MongoDB** usando **Mongoose**.
+
+## Requisitos
+
+- Node.js 18 o superior
+- MongoDB local (Community Server o Docker) o un cluster de MongoDB Atlas
 
 ## Como ejecutarlo
 
 ```bash
 npm install
+cp .env.example .env      # en Windows: copy .env.example .env
+npm run seed              # carga los datos de ejemplo de data/ en MongoDB
 npm start
 ```
 
 El servidor queda en [http://localhost:3000](http://localhost:3000).
 
-Si el puerto 3000 esta ocupado, cerrar la otra ventana de Node y volver a ejecutar `npm start`.
+Variables de entorno (`.env`):
+
+| Variable | Ejemplo |
+| --- | --- |
+| `PORT` | `3000` |
+| `MONGODB_URI` | `mongodb://127.0.0.1:27017/sistema_agrario` |
+
+Para usar Atlas, reemplazar `MONGODB_URI` por la cadena de conexion del cluster (`mongodb+srv://usuario:clave@cluster.../sistema_agrario`).
+
+Con Docker se puede levantar un MongoDB local con:
+
+```bash
+docker run -d --name mongo-agrario -p 27017:27017 mongo:7
+```
 
 ## Vistas (Pug)
 
@@ -33,7 +53,7 @@ Listado de endpoints: `GET /api`
 | Metodo | Ruta | Descripcion |
 | --- | --- | --- |
 | GET | `/productores` | Listar |
-| GET | `/productores/:id` | Buscar por id |
+| GET | `/productores/:id` | Buscar por id (ObjectId de MongoDB) |
 | POST | `/productores` | Crear |
 | PUT | `/productores/:id` | Actualizar |
 | DELETE | `/productores/:id` | Eliminar |
@@ -42,25 +62,37 @@ Las mismas operaciones existen para `/tecnicos`, `/tipos-cultivo`, `/lotes` y `/
 
 Filtros:
 
-- `GET /lotes?productorId=1`
-- `GET /observaciones?loteId=1`
+- `GET /lotes?productor=<id>`
+- `GET /observaciones?lote=<id>&tecnico=<id>`
 
-Coleccion para importar: `postman/Sistema-Agrario.postman_collection.json`
+Los listados de lotes y observaciones usan `populate` para devolver el nombre del productor, cultivo, lote y tecnico.
+
+Coleccion para importar: `postman/Sistema-Agrario.postman_collection.json`. Correrla en orden despues de `npm run seed`: los GET de listado guardan los `_id` en variables de la coleccion.
+
+## Validaciones y errores
+
+- Validaciones en los Schemas de Mongoose: campos obligatorios, `min`, `enum`, formato de CUIT (`match`) y `unique`.
+- Los controladores verifican que existan las referencias (productor, tipo de cultivo, lote, tecnico).
+- No se puede borrar un registro que tiene otros asociados (por ejemplo un productor con lotes).
+- `middleware/errorHandler.js` centraliza los errores: 400 para validaciones, id invalido o duplicados; 404 para rutas o registros inexistentes; 500 para errores inesperados.
 
 ## Estructura
 
 ```
-models/         clases (POO)
+config/         conexion a MongoDB
+models/         Schemas y modelos de Mongoose
 routes/         rutas HTTP
-controllers/    logica y persistencia JSON
+controllers/    logica con async/await
 views/          plantillas Pug
-middleware/     logger y respuesta JSON o redirect
-data/           archivos JSON
+middleware/     logger, respuesta JSON o redirect y manejo de errores
+data/           datos de ejemplo que carga seed.js
+seed.js         carga inicial de la base
 ```
 
 ## Tecnologias
 
 - Node.js
 - Express
+- MongoDB + Mongoose
 - Pug
-- Persistencia en JSON (`fs` sincrono)
+- dotenv

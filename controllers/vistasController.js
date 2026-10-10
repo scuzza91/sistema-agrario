@@ -1,11 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-
-const leerJson = (nombre) => {
-    const ruta = path.join(__dirname, "../data", nombre);
-    const data = fs.readFileSync(ruta, "utf-8");
-    return JSON.parse(data);
-};
+const Productor = require("../models/Productor");
+const Tecnico = require("../models/Tecnico");
+const TipoCultivo = require("../models/TipoCultivo");
+const Lote = require("../models/Lote");
+const Observacion = require("../models/Observacion");
 
 const verInicio = (req, res) => {
     res.render("index", {
@@ -13,43 +10,63 @@ const verInicio = (req, res) => {
     });
 };
 
-const verProductores = (req, res) => {
-    res.render("productores", {
-        titulo: "Productores",
-        productores: leerJson("productores.json")
-    });
+const verProductores = async (req, res, next) => {
+    try {
+        res.render("productores", {
+            titulo: "Productores",
+            productores: await Productor.find().sort({ nombre: 1 })
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
-const verTecnicos = (req, res) => {
-    res.render("tecnicos", {
-        titulo: "Tecnicos",
-        tecnicos: leerJson("tecnicos.json")
-    });
+const verTecnicos = async (req, res, next) => {
+    try {
+        res.render("tecnicos", {
+            titulo: "Tecnicos",
+            tecnicos: await Tecnico.find().sort({ apellido: 1 })
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
-const verTiposCultivo = (req, res) => {
-    res.render("tiposCultivo", {
-        titulo: "Tipos de cultivo",
-        tipos: leerJson("tiposCultivo.json")
-    });
+const verTiposCultivo = async (req, res, next) => {
+    try {
+        res.render("tiposCultivo", {
+            titulo: "Tipos de cultivo",
+            tipos: await TipoCultivo.find().sort({ nombre: 1 })
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
-const verLotes = (req, res) => {
-    res.render("lotes", {
-        titulo: "Lotes",
-        lotes: leerJson("lotes.json"),
-        productores: leerJson("productores.json"),
-        tipos: leerJson("tiposCultivo.json")
-    });
+const verLotes = async (req, res, next) => {
+    try {
+        res.render("lotes", {
+            titulo: "Lotes",
+            lotes: await Lote.find().populate("productor").populate("tipoCultivo"),
+            productores: await Productor.find().sort({ nombre: 1 }),
+            tipos: await TipoCultivo.find().sort({ nombre: 1 })
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
-const verObservaciones = (req, res) => {
-    res.render("observaciones", {
-        titulo: "Observaciones",
-        observaciones: leerJson("observaciones.json"),
-        lotes: leerJson("lotes.json"),
-        tecnicos: leerJson("tecnicos.json")
-    });
+const verObservaciones = async (req, res, next) => {
+    try {
+        res.render("observaciones", {
+            titulo: "Observaciones",
+            observaciones: await Observacion.find().sort({ fecha: -1 }).populate("lote").populate("tecnico"),
+            lotes: await Lote.find().sort({ nombre: 1 }),
+            tecnicos: await Tecnico.find().sort({ apellido: 1 })
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
 module.exports = {

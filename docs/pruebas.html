@@ -1,35 +1,25 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <title>Pruebas funcionales - Sistema agrario</title>
-  <style>
-    body { font-family: Calibri, Arial, sans-serif; background: #f4f6f8; margin: 24px; color: #1b1b1b; }
-    h1 { color: #1F4E79; }
-    .card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
-    .meta { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
-    code { background: #eef2f6; padding: 4px 8px; border-radius: 4px; }
-    pre { background: #0f172a; color: #e2e8f0; padding: 12px; border-radius: 6px; overflow: auto; font-size: 13px; }
-    .method { color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
-    .GET { background: #1d4ed8; }
-    .POST { background: #15803d; }
-    .DELETE { background: #b91c1c; }
-    .status.ok { color: #15803d; font-weight: bold; }
-    .status.fail { color: #b91c1c; font-weight: bold; }
-  </style>
-</head>
-<body>
-  <h1>Registro de pruebas funcionales</h1>
-  <p>Sistema agrario - monitoreo de lotes | http://localhost:3000</p>
-  
-            <article class="card">
-              <div class="meta">
-                <span class="method GET">GET</span>
-                <code>/api</code>
-                <span class="status ok">200</span>
-              </div>
-              <h3>Listado de endpoints</h3>
-              <pre>{
+<html lang="es"><head><meta charset="utf-8"><title>Pruebas funcionales - Sistema agrario (MongoDB)</title>
+<style>
+body { font-family: Calibri, Arial, sans-serif; background: #f4f6f8; margin: 24px; color: #1b1b1b; }
+h1 { color: #1F4E79; margin-bottom: 4px; }
+.card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; }
+.card h3 { margin: 6px 0; font-size: 15px; }
+.meta { display: flex; gap: 12px; align-items: center; }
+code { background: #eef2f6; padding: 3px 8px; border-radius: 4px; font-size: 13px; word-break: break-all; }
+pre { background: #0f172a; color: #e2e8f0; padding: 10px; border-radius: 6px; overflow: auto; font-size: 12px; margin: 6px 0 0; }
+pre.req { background: #eef2f6; color: #1b1b1b; }
+.method { color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 13px; }
+.GET { background: #1d4ed8; } .POST { background: #15803d; } .PUT { background: #b45309; } .DELETE { background: #b91c1c; }
+.status.ok { color: #15803d; font-weight: bold; } .status.fail { color: #b91c1c; font-weight: bold; }
+</style></head><body>
+<h1>Registro de pruebas funcionales</h1>
+<p>Sistema agrario - monitoreo de lotes | Express + MongoDB (Mongoose) | http://localhost:3000 | 20/20 pruebas con el resultado esperado</p>
+
+        <article class="card">
+          <div class="meta"><span class="method GET">GET</span><code>/api</code>
+          <span class="status ok">200 (esperado 200)</span></div>
+          <h3>Listado de endpoints</h3><pre>{
   "mensaje": "Sistema agrario - monitoreo de lotes",
   "vistas": "/ver/productores",
   "endpoints": {
@@ -40,219 +30,273 @@
     "observaciones": "/observaciones"
   }
 }</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method GET">GET</span>
-                <code>/productores</code>
-                <span class="status ok">200</span>
-              </div>
-              <h3>Listar productores</h3>
-              <pre>[
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method GET">GET</span><code>/productores</code>
+          <span class="status ok">200 (esperado 200)</span></div>
+          <h3>Listar productores desde MongoDB</h3><pre>[
   {
-    "id": 1,
-    "nombre": "Cooperativa San Martin",
-    "cuit": "30-12345678-9",
-    "localidad": "Rojas",
-    "telefono": "2474441122"
-  },
-  {
-    "id": 2,
-    "nombre": "Estancia Los Alamos",
-    "cuit": "20-30111222-3",
-    "localidad": "Pergamino",
-    "telefono": "2475445566"
-  },
-  {
-    "id": 3,
+    "_id": "6aca566d941fcec6e7d60851",
     "nombre": "Campo Demo",
     "cuit": "30-11111111-1",
     "localidad": "Salto",
-    "telefono": "11111111"
-  }
-]</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method GET">GET</span>
-                <code>/productores/1</code>
-                <span class="status ok">200</span>
-              </div>
-              <h3>Buscar productor por id</h3>
-              <pre>{
-  "id": 1,
+    "telefono": "11111111",
+    "__v": 0
+  },
+  {
+    "_id": "6aca566d941fcec6e7d60853",
+    "nombre": "Campo El Ombú",
+    "cuit": "27-40555666-8",
+    "localidad": "Salto",
+    "telefono": "2476112233",
+    "__v": 0
+  },
+  {
+    "_id": "6aca566d941fcec6e7d6084d",
+    "nombre": "Cooperativa San Martin",
+    "cuit": "30-12345678-9",
+    "localidad": "Rojas",
+    "telefono": "2474441122",
+    "__v": 0
+  },
+  {
+    "_id": "6aca566d941fcec6e7d6084f",
+    "nombre": "Estancia Los Alamos",
+    "cuit": "20-30111222-3",
+    "localidad": "Pergamino",
+    "telefono": "2475445
+...</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method GET">GET</span><code>/productores/6aca566d941fcec6e7d6084d</code>
+          <span class="status ok">200 (esperado 200)</span></div>
+          <h3>Buscar productor por _id</h3><pre>{
+  "_id": "6aca566d941fcec6e7d6084d",
   "nombre": "Cooperativa San Martin",
   "cuit": "30-12345678-9",
   "localidad": "Rojas",
-  "telefono": "2474441122"
+  "telefono": "2474441122",
+  "__v": 0
 }</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method GET">GET</span>
-                <code>/productores/999</code>
-                <span class="status ok">404</span>
-              </div>
-              <h3>Productor inexistente</h3>
-              <pre>{
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method GET">GET</span><code>/productores/000000000000000000000000</code>
+          <span class="status ok">404 (esperado 404)</span></div>
+          <h3>Productor inexistente</h3><pre>{
   "mensaje": "Productor no encontrado"
 }</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method GET">GET</span>
-                <code>/lotes?productorId=1</code>
-                <span class="status ok">200</span>
-              </div>
-              <h3>Filtrar lotes por productor</h3>
-              <pre>[
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method GET">GET</span><code>/productores/abc</code>
+          <span class="status ok">400 (esperado 400)</span></div>
+          <h3>Id con formato invalido (CastError)</h3><pre>{
+  "mensaje": "El valor de _id no es valido"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method POST">POST</span><code>/productores</code>
+          <span class="status ok">400 (esperado 400)</span></div>
+          <h3>CUIT con formato invalido (match)</h3><pre class='req'>{
+  "nombre": "Error",
+  "cuit": "123"
+}</pre><pre>{
+  "mensaje": "cuit debe tener el formato 00-00000000-0"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method POST">POST</span><code>/productores</code>
+          <span class="status ok">400 (esperado 400)</span></div>
+          <h3>CUIT repetido (unique)</h3><pre class='req'>{
+  "nombre": "Repetido",
+  "cuit": "30-12345678-9"
+}</pre><pre>{
+  "mensaje": "Ya existe un registro con ese cuit"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method GET">GET</span><code>/lotes?productor=6aca566d941fcec6e7d6084d</code>
+          <span class="status ok">200 (esperado 200)</span></div>
+          <h3>Filtrar lotes por productor (populate)</h3><pre>[
   {
-    "id": 1,
+    "_id": "6aca566d941fcec6e7d6085f",
     "nombre": "Lote Norte",
     "hectareas": 40,
-    "productorId": 1,
-    "tipoCultivoId": 1,
-    "estado": "activo"
+    "productor": {
+      "_id": "6aca566d941fcec6e7d6084d",
+      "nombre": "Cooperativa San Martin"
+    },
+    "tipoCultivo": {
+      "_id": "6aca566d941fcec6e7d60859",
+      "nombre": "Soja"
+    },
+    "estado": "activo",
+    "__v": 0
   },
   {
-    "id": 2,
+    "_id": "6aca566d941fcec6e7d60861",
     "nombre": "Lote Sur",
     "hectareas": 22,
-    "productorId": 1,
-    "tipoCultivoId": 2,
-    "estado": "activo"
+    "productor": {
+      "_id": "6aca566d941fcec6e7d6084d",
+      "nombre": "Cooperativa San Martin"
+    },
+    "tipoCultivo": {
+      "_id": "6aca566d941fcec6e7d6085b",
+      "nombre": "Maiz"
+    },
+    "estado": "activo",
+    "__v": 0
   }
 ]</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method GET">GET</span>
-                <code>/tecnicos</code>
-                <span class="status ok">200</span>
-              </div>
-              <h3>Listar tecnicos</h3>
-              <pre>[
-  {
-    "id": 1,
-    "nombre": "Laura",
-    "apellido": "Fernandez",
-    "especialidad": "Fitopatologia",
-    "matricula": "TEC-1001"
-  },
-  {
-    "id": 2,
-    "nombre": "Martin",
-    "apellido": "Acosta",
-    "especialidad": "Suelos",
-    "matricula": "TEC-1002"
-  }
-]</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method GET">GET</span>
-                <code>/tipos-cultivo</code>
-                <span class="status ok">200</span>
-              </div>
-              <h3>Listar tipos de cultivo</h3>
-              <pre>[
-  {
-    "id": 1,
-    "nombre": "Soja",
-    "descripcion": "Oleaginosa de ciclo estival",
-    "cicloDias": 130
-  },
-  {
-    "id": 2,
-    "nombre": "Maiz",
-    "descripcion": "Cereal de verano",
-    "cicloDias": 140
-  },
-  {
-    "id": 3,
-    "nombre": "Trigo",
-    "descripcion": "Cereal de invierno",
-    "cicloDias": 150
-  }
-]</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method GET">GET</span>
-                <code>/observaciones?loteId=1</code>
-                <span class="status ok">200</span>
-              </div>
-              <h3>Filtrar observaciones por lote</h3>
-              <pre>[
-  {
-    "id": 1,
-    "loteId": 1,
-    "tecnicoId": 1,
-    "fecha": "2026-09-10",
-    "tipo": "humedad",
-    "descripcion": "Humedad de suelo adecuada para siembra"
-  },
-  {
-    "id": 2,
-    "loteId": 1,
-    "tecnicoId": 2,
-    "fecha": "2026-09-12",
-    "tipo": "suelo",
-    "descripcion": "Se recomienda analisis de nitrogeno"
-  }
-]</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method POST">POST</span>
-                <code>/lotes</code>
-                <span class="status ok">400</span>
-              </div>
-              <h3>Alta de lote con productor inexistente</h3>
-              <pre>{
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method POST">POST</span><code>/lotes</code>
+          <span class="status ok">400 (esperado 400)</span></div>
+          <h3>Hectareas negativas (min)</h3><pre class='req'>{
+  "nombre": "Lote Error",
+  "hectareas": -5,
+  "productor": "6aca566d941fcec6e7d6084d",
+  "tipoCultivo": "6aca566d941fcec6e7d6085b"
+}</pre><pre>{
+  "mensaje": "hectareas debe ser mayor a 0"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method POST">POST</span><code>/lotes</code>
+          <span class="status ok">400 (esperado 400)</span></div>
+          <h3>Lote con productor inexistente</h3><pre class='req'>{
+  "nombre": "Lote Error",
+  "hectareas": 5,
+  "productor": "000000000000000000000000",
+  "tipoCultivo": "6aca566d941fcec6e7d6085b"
+}</pre><pre>{
   "mensaje": "El productor indicado no existe"
 }</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method DELETE">DELETE</span>
-                <code>/productores/1</code>
-                <span class="status ok">400</span>
-              </div>
-              <h3>Baja de productor con lotes asociados</h3>
-              <pre>{
-  "mensaje": "No se puede eliminar el productor porque tiene lotes asociados"
-}</pre>
-            </article>
-            
-            <article class="card">
-              <div class="meta">
-                <span class="method POST">POST</span>
-                <code>/observaciones</code>
-                <span class="status ok">201</span>
-              </div>
-              <h3>Alta de observacion</h3>
-              <pre>{
-  "mensaje": "Observacion creada",
-  "observacion": {
-    "id": 4,
-    "loteId": 3,
-    "tecnicoId": 2,
-    "fecha": "2026-09-17",
-    "tipo": "clima",
-    "descripcion": "Helada leve. Evaluar dano en trigo"
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method POST">POST</span><code>/lotes</code>
+          <span class="status ok">201 (esperado 201)</span></div>
+          <h3>Alta de lote</h3><pre class='req'>{
+  "nombre": "Lote Prueba",
+  "hectareas": 25,
+  "productor": "6aca566d941fcec6e7d6084d",
+  "tipoCultivo": "6aca566d941fcec6e7d6085b"
+}</pre><pre>{
+  "mensaje": "Lote creado",
+  "lote": {
+    "nombre": "Lote Prueba",
+    "hectareas": 25,
+    "productor": "6aca566d941fcec6e7d6084d",
+    "tipoCultivo": "6aca566d941fcec6e7d6085b",
+    "estado": "activo",
+    "_id": "6aca57f2906c1caef22bbe8c",
+    "__v": 0
   }
 }</pre>
-            </article>
-            
-</body>
-</html>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method PUT">PUT</span><code>/lotes/6aca57f2906c1caef22bbe8c</code>
+          <span class="status ok">200 (esperado 200)</span></div>
+          <h3>Actualizar estado del lote</h3><pre class='req'>{
+  "estado": "cosechado"
+}</pre><pre>{
+  "mensaje": "Lote actualizado",
+  "lote": {
+    "_id": "6aca57f2906c1caef22bbe8c",
+    "nombre": "Lote Prueba",
+    "hectareas": 25,
+    "productor": "6aca566d941fcec6e7d6084d",
+    "tipoCultivo": "6aca566d941fcec6e7d6085b",
+    "estado": "cosechado",
+    "__v": 0
+  }
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method PUT">PUT</span><code>/lotes/6aca57f2906c1caef22bbe8c</code>
+          <span class="status ok">400 (esperado 400)</span></div>
+          <h3>Estado fuera del enum</h3><pre class='req'>{
+  "estado": "inventado"
+}</pre><pre>{
+  "mensaje": "estado debe ser activo, en barbecho o cosechado"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method POST">POST</span><code>/observaciones</code>
+          <span class="status ok">201 (esperado 201)</span></div>
+          <h3>Alta de observacion</h3><pre class='req'>{
+  "lote": "6aca57f2906c1caef22bbe8c",
+  "tecnico": "6aca566d941fcec6e7d60857",
+  "tipo": "plaga",
+  "descripcion": "Presencia de chinche. Revisar en 5 dias"
+}</pre><pre>{
+  "mensaje": "Observacion creada",
+  "observacion": {
+    "lote": "6aca57f2906c1caef22bbe8c",
+    "tecnico": "6aca566d941fcec6e7d60857",
+    "fecha": "2026-10-10T15:21:22.901Z",
+    "tipo": "plaga",
+    "descripcion": "Presencia de chinche. Revisar en 5 dias",
+    "_id": "6aca57f2906c1caef22bbe91",
+    "__v": 0
+  }
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method GET">GET</span><code>/observaciones?lote=6aca57f2906c1caef22bbe8c</code>
+          <span class="status ok">200 (esperado 200)</span></div>
+          <h3>Filtrar observaciones por lote</h3><pre>[
+  {
+    "_id": "6aca57f2906c1caef22bbe91",
+    "lote": {
+      "_id": "6aca57f2906c1caef22bbe8c",
+      "nombre": "Lote Prueba"
+    },
+    "tecnico": {
+      "_id": "6aca566d941fcec6e7d60857",
+      "nombre": "Martin",
+      "apellido": "Acosta"
+    },
+    "fecha": "2026-10-10T15:21:22.901Z",
+    "tipo": "plaga",
+    "descripcion": "Presencia de chinche. Revisar en 5 dias",
+    "__v": 0
+  }
+]</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method DELETE">DELETE</span><code>/lotes/6aca57f2906c1caef22bbe8c</code>
+          <span class="status ok">400 (esperado 400)</span></div>
+          <h3>Baja de lote con observaciones</h3><pre>{
+  "mensaje": "No se puede eliminar el lote porque tiene observaciones asociadas"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method DELETE">DELETE</span><code>/observaciones/6aca57f2906c1caef22bbe91</code>
+          <span class="status ok">200 (esperado 200)</span></div>
+          <h3>Baja de observacion</h3><pre>{
+  "mensaje": "Observacion eliminada"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method DELETE">DELETE</span><code>/lotes/6aca57f2906c1caef22bbe8c</code>
+          <span class="status ok">200 (esperado 200)</span></div>
+          <h3>Baja de lote sin observaciones</h3><pre>{
+  "mensaje": "Lote eliminado"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method DELETE">DELETE</span><code>/productores/6aca566d941fcec6e7d6084d</code>
+          <span class="status ok">400 (esperado 400)</span></div>
+          <h3>Baja de productor con lotes asociados</h3><pre>{
+  "mensaje": "No se puede eliminar el productor porque tiene lotes asociados"
+}</pre>
+        </article>
+        <article class="card">
+          <div class="meta"><span class="method GET">GET</span><code>/no-existe</code>
+          <span class="status ok">404 (esperado 404)</span></div>
+          <h3>Ruta inexistente</h3><pre>{
+  "mensaje": "Ruta no encontrada: GET /no-existe"
+}</pre>
+        </article>
+</body></html>

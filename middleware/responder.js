@@ -1,5 +1,10 @@
+// Responde JSON a Postman / Thunder Client y HTML (Pug) a los formularios del navegador
+const quiereHtml = (req) => {
+    return req.is("application/x-www-form-urlencoded") || req.accepts(["json", "html"]) === "html";
+};
+
 const responder = (req, res, status, payload, redirect) => {
-    if (req.is("application/json")) {
+    if (!quiereHtml(req)) {
         return res.status(status).json(payload);
     }
 

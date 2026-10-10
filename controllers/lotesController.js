@@ -1,200 +1,126 @@
-const fs = require("fs");
-const path = require("path");
-
 const Lote = require("../models/Lote");
+const Productor = require("../models/Productor");
+const TipoCultivo = require("../models/TipoCultivo");
+const Observacion = require("../models/Observacion");
 const responder = require("../middleware/responder");
 
-const rutaArchivo = path.join(__dirname, "../data/lotes.json");
-const rutaProductores = path.join(__dirname, "../data/productores.json");
-const rutaTiposCultivo = path.join(__dirname, "../data/tiposCultivo.json");
-const rutaObservaciones = path.join(__dirname, "../data/observaciones.json");
-
-const leerLotes = () => {
-    const data = fs.readFileSync(rutaArchivo, "utf-8");
-    return JSON.parse(data);
-};
-
-const guardarLotes = (lotes) => {
-    fs.writeFileSync(
-        rutaArchivo,
-        JSON.stringify(lotes, null, 2)
-    );
-};
-
-const leerJson = (ruta) => {
-    const data = fs.readFileSync(ruta, "utf-8");
-    return JSON.parse(data);
-};
-
-const obtenerNuevoId = (lista) => {
-    if (lista.length === 0) {
-        return 1;
-    }
-    return Math.max(...lista.map((item) => item.id)) + 1;
-};
-
-// GET ALL - se puede filtrar por productorId
-const obtenerLotes = (req, res) => {
-    let lotes = leerLotes();
-    const productorId = req.query.productorId;
-
-    if (productorId) {
-        lotes = lotes.filter((lote) => lote.productorId === parseInt(productorId));
+// Verifica que el productor y el tipo de cultivo indicados existan
+const validarReferencias = async (productor, tipoCultivo) => {
+    if (productor && !(await Productor.exists({ _id: productor }))) {
+        return "El productor indicado no existe";
     }
 
-    res.json(lotes);
+    if (tipoCultivo && !(await TipoCultivo.exists({ _id: tipoCultivo }))) {
+        return "El tipo de cultivo indicado no existe";
+    }
+
+    return null;
+};
+
+// GET ALL - se puede filtrar por productor (?productor=id)
+const obtenerLotes = async (req, res, next) => {
+    try {
+        const filtro = {};
+
+        if (req.query.productor) {
+            filtro.productor = req.query.productor;
+        }
+
+        const lotes = await Lote.find(filtro)
+            .populate("productor", "nombre")
+            .populate("tipoCultivo", "nombre");
+
+        res.json(lotes);
+    } catch (error) {
+        next(error);
+    }
 };
 
 // GET BY ID
-const obtenerLotePorId = (req, res) => {
-    const lotes = leerLotes();
-    const id = parseInt(req.params.id);
-    const lote = lotes.find((l) => l.id === id);
+const obtenerLotePorId = async (req, res, next) => {
+    try {
+        const lote = await Lote.findById(req.params.id)
+            .populate("productor")
+            .populate("tipoCultivo");
 
-    if (!lote) {
-        return res.status(404).json({
-            mensaje: "Lote no encontrado"
-        });
+        if (!lote) {
+            return res.status(404).json({ mensaje: "Lote no encontrado" });
+        }
+
+        res.json(lote);
+    } catch (error) {
+        next(error);
     }
-
-    res.json(lote);
 };
 
 // CREATE
-const crearLote = (req, res) => {
-    const lotes = leerLotes();
-    const { nombre, hectareas, productorId, tipoCultivoId, estado } = req.body;
+const crearLote = async (req, res, next) => {
+    try {
+        const { nombre, hectareas, productor, tipoCultivo, estado } = req.body;
 
-    if (!nombre || !productorId || !tipoCultivoId) {
-        return responder(req, res, 400, {
-            mensaje: "nombre, productorId y tipoCultivoId son obligatorios"
-        });
+        const errorReferencia = await validarReferencias(productor, tipoCultivo);
+        if (errorReferencia) {
+            return responder(req, res, 400, { mensaje: errorReferencia });
+        }
+
+        const nuevoLote = await Lote.create({ nombre, hectareas, productor, tipoCultivo, estado });
+
+        responder(req, res, 201, {
+            mensaje: "Lote creado",
+            lote: nuevoLote
+        }, "/ver/lotes");
+    } catch (error) {
+        next(error);
     }
-
-    if (hectareas !== undefined && Number(hectareas) <= 0) {
-        return responder(req, res, 400, {
-            mensaje: "hectareas debe ser mayor a 0"
-        });
-    }
-
-    const productores = leerJson(rutaProductores);
-    const tipos = leerJson(rutaTiposCultivo);
-
-    if (!productores.some((p) => p.id === parseInt(productorId))) {
-        return responder(req, res, 400, {
-            mensaje: "El productor indicado no existe"
-        });
-    }
-
-    if (!tipos.some((t) => t.id === parseInt(tipoCultivoId))) {
-        return responder(req, res, 400, {
-            mensaje: "El tipo de cultivo indicado no existe"
-        });
-    }
-
-    const id = req.body.id ? parseInt(req.body.id) : obtenerNuevoId(lotes);
-
-    if (lotes.some((l) => l.id === id)) {
-        return responder(req, res, 400, {
-            mensaje: "Ya existe un lote con ese id"
-        });
-    }
-
-    const nuevoLote = new Lote(
-        id,
-        nombre,
-        Number(hectareas),
-        parseInt(productorId),
-        parseInt(tipoCultivoId),
-        estado || "activo"
-    );
-
-    lotes.push(nuevoLote);
-    guardarLotes(lotes);
-
-    return responder(req, res, 201, {
-        mensaje: "Lote creado",
-        lote: nuevoLote
-    }, "/ver/lotes");
 };
 
 // UPDATE
-const actualizarLote = (req, res) => {
-    const lotes = leerLotes();
-    const id = parseInt(req.params.id);
-    const lote = lotes.find((l) => l.id === id);
+const actualizarLote = async (req, res, next) => {
+    try {
+        const { nombre, hectareas, productor, tipoCultivo, estado } = req.body;
 
-    if (!lote) {
-        return res.status(404).json({
-            mensaje: "Lote no encontrado"
-        });
-    }
-
-    const { nombre, hectareas, productorId, tipoCultivoId, estado } = req.body;
-
-    if (hectareas !== undefined && Number(hectareas) <= 0) {
-        return res.status(400).json({
-            mensaje: "hectareas debe ser mayor a 0"
-        });
-    }
-
-    if (productorId !== undefined) {
-        const productores = leerJson(rutaProductores);
-        if (!productores.some((p) => p.id === parseInt(productorId))) {
-            return res.status(400).json({
-                mensaje: "El productor indicado no existe"
-            });
+        const errorReferencia = await validarReferencias(productor, tipoCultivo);
+        if (errorReferencia) {
+            return res.status(400).json({ mensaje: errorReferencia });
         }
-    }
 
-    if (tipoCultivoId !== undefined) {
-        const tipos = leerJson(rutaTiposCultivo);
-        if (!tipos.some((t) => t.id === parseInt(tipoCultivoId))) {
-            return res.status(400).json({
-                mensaje: "El tipo de cultivo indicado no existe"
-            });
+        const lote = await Lote.findByIdAndUpdate(
+            req.params.id,
+            { nombre, hectareas, productor, tipoCultivo, estado },
+            { new: true, runValidators: true }
+        );
+
+        if (!lote) {
+            return res.status(404).json({ mensaje: "Lote no encontrado" });
         }
+
+        res.json({ mensaje: "Lote actualizado", lote });
+    } catch (error) {
+        next(error);
     }
-
-    lote.nombre = nombre ?? lote.nombre;
-    lote.hectareas = hectareas ?? lote.hectareas;
-    lote.productorId = productorId !== undefined ? parseInt(productorId) : lote.productorId;
-    lote.tipoCultivoId = tipoCultivoId !== undefined ? parseInt(tipoCultivoId) : lote.tipoCultivoId;
-    lote.estado = estado ?? lote.estado;
-
-    guardarLotes(lotes);
-
-    res.json({
-        mensaje: "Lote actualizado",
-        lote
-    });
 };
 
-// DELETE
-const eliminarLote = (req, res) => {
-    const lotes = leerLotes();
-    const id = parseInt(req.params.id);
-    const observaciones = leerJson(rutaObservaciones);
+// DELETE - no se borra si tiene observaciones
+const eliminarLote = async (req, res, next) => {
+    try {
+        const tieneObservaciones = await Observacion.exists({ lote: req.params.id });
 
-    if (observaciones.some((obs) => obs.loteId === id)) {
-        return res.status(400).json({
-            mensaje: "No se puede eliminar el lote porque tiene observaciones asociadas"
-        });
+        if (tieneObservaciones) {
+            return res.status(400).json({
+                mensaje: "No se puede eliminar el lote porque tiene observaciones asociadas"
+            });
+        }
+
+        const lote = await Lote.findByIdAndDelete(req.params.id);
+
+        if (!lote) {
+            return res.status(404).json({ mensaje: "Lote no encontrado" });
+        }
+
+        res.json({ mensaje: "Lote eliminado" });
+    } catch (error) {
+        next(error);
     }
-
-    const nuevosLotes = lotes.filter((l) => l.id !== id);
-
-    if (lotes.length === nuevosLotes.length) {
-        return res.status(404).json({
-            mensaje: "Lote no encontrado"
-        });
-    }
-
-    guardarLotes(nuevosLotes);
-
-    res.json({
-        mensaje: "Lote eliminado"
-    });
 };
 
 module.exports = {

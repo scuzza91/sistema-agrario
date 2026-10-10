@@ -1,11 +1,18 @@
-class Tecnico {
-    constructor(id, nombre, apellido, especialidad, matricula) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.especialidad = especialidad;
-        this.matricula = matricula;
-    }
-}
+const mongoose = require("mongoose");
 
-module.exports = Tecnico;
+const tecnicoSchema = new mongoose.Schema({
+    nombre: {
+        type: String,
+        required: [true, "nombre es obligatorio"],
+        trim: true
+    },
+    apellido: {
+        type: String,
+        required: [true, "apellido es obligatorio"],
+        trim: true
+    },
+    especialidad: String,
+    matricula: String
+});
+
+module.exports = mongoose.model("Tecnico", tecnicoSchema, "tecnicos");

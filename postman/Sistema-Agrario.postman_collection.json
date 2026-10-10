@@ -1,13 +1,37 @@
 {
   "info": {
-    "name": "Sistema Agrario - Monitoreo de Lotes",
-    "description": "Pruebas funcionales de la primera entrega. Importar en Postman y ejecutar con el servidor en http://localhost:3000",
+    "name": "Sistema Agrario - MongoDB (2da entrega)",
+    "description": "Correr en orden con el servidor en http://localhost:3000 despues de `npm run seed`. Los GET de listado guardan los _id en variables de la coleccion para usarlos en las siguientes peticiones.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
       "value": "http://localhost:3000"
+    },
+    {
+      "key": "productorId",
+      "value": ""
+    },
+    {
+      "key": "tecnicoId",
+      "value": ""
+    },
+    {
+      "key": "tipoCultivoId",
+      "value": ""
+    },
+    {
+      "key": "loteId",
+      "value": ""
+    },
+    {
+      "key": "observacionId",
+      "value": ""
+    },
+    {
+      "key": "nuevoProductorId",
+      "value": ""
     }
   ],
   "item": [
@@ -28,31 +52,80 @@
       "name": "1. Productores",
       "item": [
         {
-          "name": "GET todos los productores",
+          "name": "GET todos (guarda productorId)",
           "request": {
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/productores"
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if ((r.find((p) => p.cuit === \"30-12345678-9\") || r[0])._id) pm.collectionVariables.set(\"productorId\", (r.find((p) => p.cuit === \"30-12345678-9\") || r[0])._id);"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "GET productor por id",
+          "name": "GET por id",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/productores/1"
-          }
+            "url": "{{baseUrl}}/productores/{{productorId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "GET productor inexistente (404)",
+          "name": "GET inexistente (404)",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/productores/999"
-          }
+            "url": "{{baseUrl}}/productores/000000000000000000000000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "POST crear productor",
+          "name": "GET id invalido (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/productores/abc"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST crear",
           "request": {
             "method": "POST",
             "header": [
@@ -61,15 +134,80 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/productores",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Campo El Ombú\",\n  \"cuit\": \"27-40555666-8\",\n  \"localidad\": \"Salto\",\n  \"telefono\": \"2476112233\"\n}"
-            },
-            "url": "{{baseUrl}}/productores"
-          }
+              "raw": "{\n  \"nombre\": \"Agro Del Sur\",\n  \"cuit\": \"20-33444555-6\",\n  \"localidad\": \"Junin\",\n  \"telefono\": \"2364112233\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.productor && r.productor._id) pm.collectionVariables.set(\"nuevoProductorId\", r.productor && r.productor._id);"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "PUT actualizar productor",
+          "name": "POST cuit invalido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/productores",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Error\",\n  \"cuit\": \"123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST sin nombre (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/productores",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cuit\": \"20-11111111-2\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT actualizar",
           "request": {
             "method": "PUT",
             "header": [
@@ -78,20 +216,58 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/productores/{{nuevoProductorId}}",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"telefono\": \"2476990000\"\n}"
-            },
-            "url": "{{baseUrl}}/productores/1"
-          }
+              "raw": "{\n  \"telefono\": \"2364999999\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "DELETE productor con lotes (400)",
+          "name": "DELETE productor nuevo",
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": "{{baseUrl}}/productores/1"
-          }
+            "url": "{{baseUrl}}/productores/{{nuevoProductorId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE con lotes asociados (400)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/productores/{{productorId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -99,23 +275,26 @@
       "name": "2. Tecnicos",
       "item": [
         {
-          "name": "GET todos los tecnicos",
+          "name": "GET todos (guarda tecnicoId)",
           "request": {
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/tecnicos"
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r[0] && r[0]._id) pm.collectionVariables.set(\"tecnicoId\", r[0] && r[0]._id);"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "GET tecnico por id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/tecnicos/1"
-          }
-        },
-        {
-          "name": "POST crear tecnico",
+          "name": "POST crear",
           "request": {
             "method": "POST",
             "header": [
@@ -124,37 +303,49 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/tecnicos",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Sofia\",\n  \"apellido\": \"Rivas\",\n  \"especialidad\": \"Riego\",\n  \"matricula\": \"TEC-1003\"\n}"
-            },
-            "url": "{{baseUrl}}/tecnicos"
-          }
+              "raw": "{\n  \"nombre\": \"Sofia\",\n  \"apellido\": \"Gomez\",\n  \"especialidad\": \"Malezas\",\n  \"matricula\": \"TEC-1003\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "PUT actualizar tecnico",
+          "name": "POST sin apellido (400)",
           "request": {
-            "method": "PUT",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/tecnicos",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"especialidad\": \"Riego y suelos\"\n}"
-            },
-            "url": "{{baseUrl}}/tecnicos/2"
-          }
-        },
-        {
-          "name": "DELETE tecnico con observaciones (400)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/tecnicos/1"
-          }
+              "raw": "{\n  \"nombre\": \"Sin apellido\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -162,23 +353,26 @@
       "name": "3. Tipos de cultivo",
       "item": [
         {
-          "name": "GET todos los tipos de cultivo",
+          "name": "GET todos (guarda tipoCultivoId)",
           "request": {
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/tipos-cultivo"
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r[0] && r[0]._id) pm.collectionVariables.set(\"tipoCultivoId\", r[0] && r[0]._id);"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "GET tipo de cultivo por id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/tipos-cultivo/1"
-          }
-        },
-        {
-          "name": "POST crear tipo de cultivo",
+          "name": "POST crear",
           "request": {
             "method": "POST",
             "header": [
@@ -187,29 +381,49 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/tipos-cultivo",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Girasol\",\n  \"descripcion\": \"Oleaginosa de verano\",\n  \"cicloDias\": 120\n}"
-            },
-            "url": "{{baseUrl}}/tipos-cultivo"
-          }
+              "raw": "{\n  \"nombre\": \"Girasol\",\n  \"descripcion\": \"Oleaginosa estival\",\n  \"cicloDias\": 120\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "PUT actualizar tipo de cultivo",
+          "name": "POST nombre repetido (400)",
           "request": {
-            "method": "PUT",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/tipos-cultivo",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"cicloDias\": 125\n}"
-            },
-            "url": "{{baseUrl}}/tipos-cultivo/1"
-          }
+              "raw": "{\n  \"nombre\": \"Soja\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -217,7 +431,7 @@
       "name": "4. Lotes",
       "item": [
         {
-          "name": "GET todos los lotes",
+          "name": "GET todos con populate",
           "request": {
             "method": "GET",
             "header": [],
@@ -225,23 +439,15 @@
           }
         },
         {
-          "name": "GET lotes por productor",
+          "name": "GET filtrar por productor",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/lotes?productorId=1"
+            "url": "{{baseUrl}}/lotes?productor={{productorId}}"
           }
         },
         {
-          "name": "GET lote por id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/lotes/1"
-          }
-        },
-        {
-          "name": "POST crear lote",
+          "name": "POST crear (guarda loteId)",
           "request": {
             "method": "POST",
             "header": [
@@ -250,15 +456,26 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/lotes",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Lote Este\",\n  \"hectareas\": 18,\n  \"productorId\": 2,\n  \"tipoCultivoId\": 1,\n  \"estado\": \"activo\"\n}"
-            },
-            "url": "{{baseUrl}}/lotes"
-          }
+              "raw": "{\n  \"nombre\": \"Lote Prueba\",\n  \"hectareas\": 25,\n  \"productor\": \"{{productorId}}\",\n  \"tipoCultivo\": \"{{tipoCultivoId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.lote && r.lote._id) pm.collectionVariables.set(\"loteId\", r.lote && r.lote._id);"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "POST lote con productor inexistente (400)",
+          "name": "POST hectareas negativas (400)",
           "request": {
             "method": "POST",
             "header": [
@@ -267,15 +484,70 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/lotes",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Lote Error\",\n  \"hectareas\": 10,\n  \"productorId\": 999,\n  \"tipoCultivoId\": 1\n}"
-            },
-            "url": "{{baseUrl}}/lotes"
-          }
+              "raw": "{\n  \"nombre\": \"Error\",\n  \"hectareas\": -3,\n  \"productor\": \"{{productorId}}\",\n  \"tipoCultivo\": \"{{tipoCultivoId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "PUT actualizar lote",
+          "name": "POST productor inexistente (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/lotes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Error\",\n  \"hectareas\": 3,\n  \"productor\": \"000000000000000000000000\",\n  \"tipoCultivo\": \"{{tipoCultivoId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/lotes/{{loteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT cambiar estado",
           "request": {
             "method": "PUT",
             "header": [
@@ -284,20 +556,49 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/lotes/{{loteId}}",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"estado\": \"en descanso\",\n  \"hectareas\": 41\n}"
-            },
-            "url": "{{baseUrl}}/lotes/1"
-          }
+              "raw": "{\n  \"estado\": \"cosechado\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "DELETE lote con observaciones (400)",
+          "name": "PUT estado invalido (400)",
           "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": "{{baseUrl}}/lotes/1"
-          }
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/lotes/{{loteId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"inventado\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -305,7 +606,7 @@
       "name": "5. Observaciones",
       "item": [
         {
-          "name": "GET todas las observaciones",
+          "name": "GET todas",
           "request": {
             "method": "GET",
             "header": [],
@@ -313,23 +614,7 @@
           }
         },
         {
-          "name": "GET observaciones por lote",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/observaciones?loteId=1"
-          }
-        },
-        {
-          "name": "GET observacion por id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/observaciones/1"
-          }
-        },
-        {
-          "name": "POST crear observacion",
+          "name": "POST crear (guarda observacionId)",
           "request": {
             "method": "POST",
             "header": [
@@ -338,15 +623,26 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/observaciones",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"loteId\": 3,\n  \"tecnicoId\": 2,\n  \"fecha\": \"2026-09-16\",\n  \"tipo\": \"clima\",\n  \"descripcion\": \"Helada leve. Evaluar dano en trigo\"\n}"
-            },
-            "url": "{{baseUrl}}/observaciones"
-          }
+              "raw": "{\n  \"lote\": \"{{loteId}}\",\n  \"tecnico\": \"{{tecnicoId}}\",\n  \"tipo\": \"plaga\",\n  \"descripcion\": \"Presencia de chinche. Revisar en 5 dias\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.observacion && r.observacion._id) pm.collectionVariables.set(\"observacionId\", r.observacion && r.observacion._id);"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "POST observacion con lote inexistente (400)",
+          "name": "POST tipo invalido (400)",
           "request": {
             "method": "POST",
             "header": [
@@ -355,15 +651,33 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/observaciones",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"loteId\": 999,\n  \"tecnicoId\": 1,\n  \"tipo\": \"plaga\",\n  \"descripcion\": \"No deberia guardarse\"\n}"
-            },
-            "url": "{{baseUrl}}/observaciones"
+              "raw": "{\n  \"lote\": \"{{loteId}}\",\n  \"tecnico\": \"{{tecnicoId}}\",\n  \"tipo\": \"otro-tipo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET filtrar por lote",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/observaciones?lote={{loteId}}"
           }
         },
         {
-          "name": "PUT actualizar observacion",
+          "name": "PUT actualizar",
           "request": {
             "method": "PUT",
             "header": [
@@ -372,20 +686,99 @@
                 "value": "application/json"
               }
             ],
+            "url": "{{baseUrl}}/observaciones/{{observacionId}}",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"descripcion\": \"Humedad de suelo adecuada. Releer en 5 dias\"\n}"
-            },
-            "url": "{{baseUrl}}/observaciones/1"
-          }
+              "raw": "{\n  \"descripcion\": \"Chinche controlada\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE lote con observaciones (400)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/lotes/{{loteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "DELETE observacion",
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": "{{baseUrl}}/observaciones/3"
-          }
+            "url": "{{baseUrl}}/observaciones/{{observacionId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE lote (ya sin observaciones)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/lotes/{{loteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Errores",
+      "item": [
+        {
+          "name": "Ruta inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/no-existe"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
         }
       ]
     }

@@ -1,138 +1,88 @@
-const fs = require("fs");
-const path = require("path");
-
 const Tecnico = require("../models/Tecnico");
+const Observacion = require("../models/Observacion");
 const responder = require("../middleware/responder");
 
-const rutaArchivo = path.join(__dirname, "../data/tecnicos.json");
-const rutaObservaciones = path.join(__dirname, "../data/observaciones.json");
-
-const leerTecnicos = () => {
-    const data = fs.readFileSync(rutaArchivo, "utf-8");
-    return JSON.parse(data);
-};
-
-const guardarTecnicos = (tecnicos) => {
-    fs.writeFileSync(
-        rutaArchivo,
-        JSON.stringify(tecnicos, null, 2)
-    );
-};
-
-const leerObservaciones = () => {
-    const data = fs.readFileSync(rutaObservaciones, "utf-8");
-    return JSON.parse(data);
-};
-
-const obtenerNuevoId = (lista) => {
-    if (lista.length === 0) {
-        return 1;
-    }
-    return Math.max(...lista.map((item) => item.id)) + 1;
-};
-
 // GET ALL
-const obtenerTecnicos = (req, res) => {
-    const tecnicos = leerTecnicos();
-    res.json(tecnicos);
+const obtenerTecnicos = async (req, res, next) => {
+    try {
+        const tecnicos = await Tecnico.find().sort({ apellido: 1 });
+        res.json(tecnicos);
+    } catch (error) {
+        next(error);
+    }
 };
 
 // GET BY ID
-const obtenerTecnicoPorId = (req, res) => {
-    const tecnicos = leerTecnicos();
-    const id = parseInt(req.params.id);
-    const tecnico = tecnicos.find((t) => t.id === id);
+const obtenerTecnicoPorId = async (req, res, next) => {
+    try {
+        const tecnico = await Tecnico.findById(req.params.id);
 
-    if (!tecnico) {
-        return res.status(404).json({
-            mensaje: "Tecnico no encontrado"
-        });
+        if (!tecnico) {
+            return res.status(404).json({ mensaje: "Tecnico no encontrado" });
+        }
+
+        res.json(tecnico);
+    } catch (error) {
+        next(error);
     }
-
-    res.json(tecnico);
 };
 
 // CREATE
-const crearTecnico = (req, res) => {
-    const tecnicos = leerTecnicos();
-    const { nombre, apellido, especialidad, matricula } = req.body;
+const crearTecnico = async (req, res, next) => {
+    try {
+        const { nombre, apellido, especialidad, matricula } = req.body;
+        const nuevoTecnico = await Tecnico.create({ nombre, apellido, especialidad, matricula });
 
-    if (!nombre || !apellido) {
-        return responder(req, res, 400, {
-            mensaje: "nombre y apellido son obligatorios"
-        });
+        responder(req, res, 201, {
+            mensaje: "Tecnico creado",
+            tecnico: nuevoTecnico
+        }, "/ver/tecnicos");
+    } catch (error) {
+        next(error);
     }
-
-    const id = req.body.id ? parseInt(req.body.id) : obtenerNuevoId(tecnicos);
-
-    if (tecnicos.some((t) => t.id === id)) {
-        return responder(req, res, 400, {
-            mensaje: "Ya existe un tecnico con ese id"
-        });
-    }
-
-    const nuevoTecnico = new Tecnico(id, nombre, apellido, especialidad, matricula);
-    tecnicos.push(nuevoTecnico);
-    guardarTecnicos(tecnicos);
-
-    return responder(req, res, 201, {
-        mensaje: "Tecnico creado",
-        tecnico: nuevoTecnico
-    }, "/ver/tecnicos");
 };
 
 // UPDATE
-const actualizarTecnico = (req, res) => {
-    const tecnicos = leerTecnicos();
-    const id = parseInt(req.params.id);
-    const tecnico = tecnicos.find((t) => t.id === id);
+const actualizarTecnico = async (req, res, next) => {
+    try {
+        const { nombre, apellido, especialidad, matricula } = req.body;
+        const tecnico = await Tecnico.findByIdAndUpdate(
+            req.params.id,
+            { nombre, apellido, especialidad, matricula },
+            { new: true, runValidators: true }
+        );
 
-    if (!tecnico) {
-        return res.status(404).json({
-            mensaje: "Tecnico no encontrado"
-        });
+        if (!tecnico) {
+            return res.status(404).json({ mensaje: "Tecnico no encontrado" });
+        }
+
+        res.json({ mensaje: "Tecnico actualizado", tecnico });
+    } catch (error) {
+        next(error);
     }
-
-    const { nombre, apellido, especialidad, matricula } = req.body;
-
-    tecnico.nombre = nombre ?? tecnico.nombre;
-    tecnico.apellido = apellido ?? tecnico.apellido;
-    tecnico.especialidad = especialidad ?? tecnico.especialidad;
-    tecnico.matricula = matricula ?? tecnico.matricula;
-
-    guardarTecnicos(tecnicos);
-
-    res.json({
-        mensaje: "Tecnico actualizado",
-        tecnico
-    });
 };
 
-// DELETE
-const eliminarTecnico = (req, res) => {
-    const tecnicos = leerTecnicos();
-    const id = parseInt(req.params.id);
-    const observaciones = leerObservaciones();
+// DELETE - no se borra si cargo observaciones
+const eliminarTecnico = async (req, res, next) => {
+    try {
+        const tieneObservaciones = await Observacion.exists({ tecnico: req.params.id });
 
-    if (observaciones.some((obs) => obs.tecnicoId === id)) {
-        return res.status(400).json({
-            mensaje: "No se puede eliminar el tecnico porque tiene observaciones asociadas"
-        });
+        if (tieneObservaciones) {
+            return res.status(400).json({
+                mensaje: "No se puede eliminar el tecnico porque tiene observaciones asociadas"
+            });
+        }
+
+        const tecnico = await Tecnico.findByIdAndDelete(req.params.id);
+
+        if (!tecnico) {
+            return res.status(404).json({ mensaje: "Tecnico no encontrado" });
+        }
+
+        res.json({ mensaje: "Tecnico eliminado" });
+    } catch (error) {
+        next(error);
     }
-
-    const nuevosTecnicos = tecnicos.filter((t) => t.id !== id);
-
-    if (tecnicos.length === nuevosTecnicos.length) {
-        return res.status(404).json({
-            mensaje: "Tecnico no encontrado"
-        });
-    }
-
-    guardarTecnicos(nuevosTecnicos);
-
-    res.json({
-        mensaje: "Tecnico eliminado"
-    });
 };
 
 module.exports = {

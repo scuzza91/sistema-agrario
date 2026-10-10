@@ -1,9 +1,13 @@
+require("dotenv").config();
+
 const path = require("path");
 const express = require("express");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
+const conectarDB = require("./config/db");
 const logger = require("./middleware/logger");
+const { noEncontrado, manejarErrores } = require("./middleware/errorHandler");
 const vistasRoutes = require("./routes/vistasRoutes");
 const productoresRoutes = require("./routes/productoresRoutes");
 const tecnicosRoutes = require("./routes/tecnicosRoutes");
@@ -42,6 +46,15 @@ app.use("/tipos-cultivo", tiposCultivoRoutes);
 app.use("/lotes", lotesRoutes);
 app.use("/observaciones", observacionesRoutes);
 
-app.listen(PORT, () => {
-    console.log("Servidor corriendo en http://localhost:" + PORT);
-});
+// Siempre al final: ruta inexistente y manejo de errores
+app.use(noEncontrado);
+app.use(manejarErrores);
+
+const iniciar = async () => {
+    await conectarDB();
+    app.listen(PORT, () => {
+        console.log("Servidor corriendo en http://localhost:" + PORT);
+    });
+};
+
+iniciar();
